@@ -1,5 +1,5 @@
 param location string = resourceGroup().location
-param DeploymentPrefix string = 'AJLab-WS'
+param DeploymentPrefix string
 param Username string
 @secure()
 param Password string
@@ -12,8 +12,6 @@ var vmName = '${DeploymentPrefix}-VM'
 var diskName = '${DeploymentPrefix}-disk'
 var NicName = '${DeploymentPrefix}-NIC'
 var NicID = networkInterface.id
-var PipName = '${DeploymentPrefix}-PIP'
-var PipId = publicIPAddress.id
 var NSGName = '${DeploymentPrefix}-NSG'
 var nsgId = resourceId('Microsoft.Network/networkSecurityGroups', NSGName)
 
@@ -79,11 +77,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
         name: 'ipconfig1'
         properties: {
           privateIPAllocationMethod: 'Dynamic'
-          
-          publicIPAddress: {
-            id: PipId
-          }
-          subnet: {
+            subnet: {
             id: '/subscriptions/${subscriptionid}/resourceGroups/${resourcegroup}/providers/Microsoft.Network/virtualNetworks/${vNETName}/subnets/ProtectedASubnet'
           }
         }
@@ -92,19 +86,6 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
     networkSecurityGroup: {
       id: nsgId
     }
-  }
-}
-
-resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2019-11-01' = {
-  name: PipName
-  location: location
-  sku: {
-    name: 'Standard'
-  }
-  properties: {
-    publicIPAddressVersion: 'IPv4'
-    publicIPAllocationMethod: 'Static'
-    
   }
 }
 
@@ -143,5 +124,3 @@ resource windowsVM 'Microsoft.Compute/virtualMachines@2020-12-01' = {
     }
   }
 }
-
-output PublicIP string = reference(PipId).ipAddress

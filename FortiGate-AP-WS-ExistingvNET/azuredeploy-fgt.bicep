@@ -1121,3 +1121,4 @@ output fortiGatePublicIP string = ((publicIP1NewOrExisting == 'new') ? reference
 output fortiGateFQDN string = ((publicIP1NewOrExisting == 'new') ? reference(publicIP1Id).dnsSettings.fqdn : '')
 output fortiGateAManagementPublicIP string = ((publicIP2NewOrExisting == 'new') ? reference(publicIP2Id).ipAddress : '')
 output fortiGateBManagementPublicIP string = ((publicIP3NewOrExisting == 'new') ? reference(publicIP3Id).ipAddress : '')
+output fortiGateNamePrefix string = fortiGateNamePrefix
