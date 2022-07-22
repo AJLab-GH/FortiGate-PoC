@@ -124,6 +124,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
   }
   dependsOn: [
     virtualNetwork
+    networkSecurityGroup
   ]
 }
 
@@ -135,8 +136,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2019-11-01' = {
   }
   properties: {
     publicIPAddressVersion: 'IPv4'
-    publicIPAllocationMethod: 'Static'
-    
+    publicIPAllocationMethod: 'Static'  
   }
 }
 
@@ -176,4 +176,4 @@ resource windowsVM 'Microsoft.Compute/virtualMachines@2020-12-01' = {
   }
 }
 
-output PublicIP string = reference(PipId).ipAddress
+output WindowsServerPublicIP string = reference(PipId).ipAddress
