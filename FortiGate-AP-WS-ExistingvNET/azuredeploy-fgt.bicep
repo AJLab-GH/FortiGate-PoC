@@ -1117,6 +1117,16 @@ resource fgbVmName 'Microsoft.Compute/virtualMachines@2021-07-01' = {
   }
 }
 
+module WSDeployment 'azuredeploy-ws.bicep' = {
+  name: 'AJLabAPWSFullDep'
+  params: {
+    Username: adminUsername
+    Password: adminPassword
+    DeploymentPrefix: '${fortiGateNamePrefix}-WS'
+    fortiGateNamePrefix: fortiGateNamePrefix
+  }
+}
+
 output fortiGatePublicIP string = ((publicIP1NewOrExisting == 'new') ? reference(publicIP1Id).ipAddress : '')
 output fortiGateFQDN string = ((publicIP1NewOrExisting == 'new') ? reference(publicIP1Id).dnsSettings.fqdn : '')
 output fortiGateAManagementPublicIP string = ((publicIP2NewOrExisting == 'new') ? reference(publicIP2Id).ipAddress : '')
