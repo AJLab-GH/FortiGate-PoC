@@ -8,3 +8,6 @@ az group create --location {Location} --name {ResourceGroupName}
 
 az deployment group create --name {FortiGateDeploymentName} --resource-group {ResourceGroupName} --template-file azuredeploy-fgt.bicep --parameters @azuredeploy-fgt.parameters.json
 
+# Get Deployment Outputs and RDP to the address provided for "WindowsServerVIP"
+
+az deployment group show  -g {ResourceGroupName} -n {FortiGateDeploymentName}  --query properties.outputs
