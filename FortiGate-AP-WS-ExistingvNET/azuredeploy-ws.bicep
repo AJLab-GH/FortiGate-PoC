@@ -87,6 +87,9 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
       id: nsgId
     }
   }
+  dependsOn: [
+    networkSecurityGroup
+  ]
 }
 
 
