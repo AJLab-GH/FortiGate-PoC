@@ -460,6 +460,7 @@ resource vnetName_resource 'Microsoft.Network/virtualNetworks@2020-04-01' = if (
   }
 }
 
+
 resource internalLBName 'Microsoft.Network/loadBalancers@2020-04-01' = {
   name: internalLBName_var
   location: location
@@ -1125,6 +1126,9 @@ module WSDeployment 'azuredeploy-ws.bicep' = {
     DeploymentPrefix: '${fortiGateNamePrefix}-WS'
     fortiGateNamePrefix: fortiGateNamePrefix
   }
+  dependsOn: [
+    vnetName_resource
+  ]
 }
 
 
