@@ -17,23 +17,9 @@ param fortiGateImageSKU string = 'fortinet_fg-vm'
 
 @description('Select the image version')
 @allowed([
-  '6.2.0'
-  '6.2.2'
-  '6.2.4'
-  '6.2.5'
-  '6.4.0'
-  '6.4.2'
-  '6.4.3'
-  '6.4.5'
-  '6.4.6'
-  '6.4.7'
-  '6.4.8'
-  '7.0.0'
-  '7.0.1'
-  '7.0.2'
-  '7.0.3'
-  '7.0.4'
-  '7.0.5'
+  '6.4.12'
+  '7.0.12'
+  '7.2.5'
   'latest'
 ])
 param fortiGateImageVersion string = 'latest'
@@ -226,16 +212,16 @@ param fortinetTags object = {
 
 var imagePublisher = 'fortinet'
 var imageOffer = 'fortinet_fortigate-vm_v5'
-var availabilitySetName_var = '${fortiGateNamePrefix}-AvailabilitySet'
+var var_availabilitySetName = '${fortiGateNamePrefix}-AvailabilitySet'
 var availabilitySetId = {
   id: availabilitySetName.id
 }
 var deploymentPrefix = '${fortiGateNamePrefix}-WS'
-var vnetName_var = ((vnetName == '') ? '${fortiGateNamePrefix}-VNET' : vnetName)
-var subnet1Id = ((vnetNewOrExisting == 'new') ? resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName_var, subnet1Name) : resourceId(vnetResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vnetName_var, subnet1Name))
-var subnet2Id = ((vnetNewOrExisting == 'new') ? resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName_var, subnet2Name) : resourceId(vnetResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vnetName_var, subnet2Name))
-var fgaVmName_var = '${fortiGateNamePrefix}-FGT-A'
-var fgbVmName_var = '${fortiGateNamePrefix}-FGT-B'
+var var_vnetName = ((vnetName == '') ? '${fortiGateNamePrefix}-VNET' : vnetName)
+var subnet1Id = ((vnetNewOrExisting == 'new') ? resourceId('Microsoft.Network/virtualNetworks/subnets', var_vnetName, subnet1Name) : resourceId(vnetResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', var_vnetName, subnet1Name))
+var subnet2Id = ((vnetNewOrExisting == 'new') ? resourceId('Microsoft.Network/virtualNetworks/subnets', var_vnetName, subnet2Name) : resourceId(vnetResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', var_vnetName, subnet2Name))
+var var_fgaVmName = '${fortiGateNamePrefix}-FGT-A'
+var var_fgbVmName = '${fortiGateNamePrefix}-FGT-B'
 var fmgCustomData = ((fortiManager == 'yes') ? '\nconfig system central-management\nset type fortimanager\n set fmg ${fortiManagerIP}\nset serial-number ${fortiManagerSerial}\nend\n config system interface\n edit port1\n append allowaccess fgfm\n end\n config system interface\n edit port2\n append allowaccess fgfm\n end\n' : '')
 var fgaCustomDataFlexVM = ((fortiGateLicenseFlexVMA == '') ? '' : 'exec vm-license ${fortiGateLicenseFlexVMA}\n')
 var fgbCustomDataFlexVM = ((fortiGateLicenseFlexVMB == '') ? '' : 'exec vm-license ${fortiGateLicenseFlexVMB}\n')
@@ -243,7 +229,7 @@ var customDataHeader = 'Content-Type: multipart/mixed; boundary="12345"\nMIME-Ve
 var fgaCustomDataGWLB = '${customDatafgaFabricSDN}${customDatafgaHostname}${customDatafgaProbeResponse}${customDatafgaAddresses}${customDatafgaInterfaces}${customDatafgaRouter}${customDatafgaVXLan}${customDatafgaVirtualWirePair}${customDatafgaFWPolicy}${customDataFMGandFlexVMA}'
 var fgbCustomDataGWLB = '${customDatafgbFabricSDN}${customDatafgbHostname}${customDatafgbProbeResponse}${customDatafgbAddresses}${customDatafgbInterfaces}${customDatafgbRouter}${customDatafgbVXLan}${customDatafgbVirtualWirePair}${customDatafgbFWPolicy}${customDataFMGandFlexVMB}'
 var customDatafgaFabricSDN = 'config system sdn-connector\nedit AzureSDN\nset type azure\nnext\nend\n'
-var customDatafgaHostname = 'config system global\n set hostname ${fgaVmName_var}\n end\n'
+var customDatafgaHostname = 'config system global\n set hostname ${var_fgaVmName}\n end\n'
 var customDatafgaProbeResponse = 'config system probe-response\n set http-probe-value OK\n set mode http-probe\n end\n'
 var customDatafgaAddresses = 'config firewall address\n edit AzureProbeSourceIP\n set allow-routing enable\n set subnet 168.63.129.16/32\n set comment Azure_PIP_used_for_internal_platform_resources\n next\n end\n'
 var customDatafgaInterfaces = 'config system interface\n edit port1\nset mode static\n set ip ${sn1IPfga}/${sn1CIDRmask}\n set description External\n set mtu-override enable\n set mtu 1570\n set allowaccess probe-response\n next\n edit port2\n set mode static\n set ip ${sn2IPfga}/${sn2CIDRmask}\n set allowaccess ping https ssh fgfm probe-response\n set description Management\n next\n end\n'
@@ -253,7 +239,7 @@ var customDatafgaVirtualWirePair = 'config system virtual-wire-pair \n edit vxla
 var customDatafgaFWPolicy = 'config firewall policy \n edit 1\n set name int-ext_vxlan \n set srcintf extvxlan intvxlan\n set dstintf extvxlan intvxlan \n set srcaddr all\n set dstaddr all \n set action accept\n set schedule always\n set service ALL\n set logtraffic all\n set utm-status enable\n set ssl-ssh-profile certificate-inspection \n set ips-sensor default \n next\n end\n'
 var customDataFMGandFlexVMA = '${fmgCustomData}${fortiGateAdditionalCustomData}\n${fgaCustomDataFlexVM}\n'
 var customDatafgbFabricSDN = 'config system sdn-connector\nedit AzureSDN\nset type azure\nnext\nend\n'
-var customDatafgbHostname = 'config system global\n set hostname ${fgbVmName_var}\n end\n'
+var customDatafgbHostname = 'config system global\n set hostname ${var_fgbVmName}\n end\n'
 var customDatafgbProbeResponse = 'config system probe-response\n set http-probe-value OK\n set mode http-probe\n end\n'
 var customDatafgbAddresses = 'config firewall address\n edit AzureProbeSourceIP\n set allow-routing enable\n set subnet 168.63.129.16/32\n set comment Azure_PIP_used_for_internal_platform_resources\n next\n end\n'
 var customDatafgbInterfaces = 'config system interface\n edit port1\nset mode static\n set ip ${sn1IPfgb}/${sn1CIDRmask}\n set description External\n set mtu-override enable\n set mtu 1570\n set allowaccess probe-response\n next\n edit port2\n set mode static\n set ip ${sn2IPfgb}/${sn2CIDRmask}\n set allowaccess ping https ssh fgfm probe-response\n set description Management\n next\n end\n'
@@ -268,22 +254,22 @@ var fgaCustomDataCombined = '${customDataHeader}${fgaCustomDataGWLB}${customData
 var fgbCustomDataCombined = '${customDataHeader}${fgbCustomDataGWLB}${customDataLicenseHeader}${fortiGateLicenseBYOLB}${customDataFooter}'
 var fgaCustomData = base64(((fortiGateLicenseBYOLA == '') ? fgaCustomDataGWLB : fgaCustomDataCombined))
 var fgbCustomData = base64(((fortiGateLicenseBYOLB == '') ? fgbCustomDataGWLB : fgbCustomDataCombined))
-var fgaNic1Name_var = '${fgaVmName_var}-Nic1'
+var var_fgaNic1Name = '${var_fgaVmName}-Nic1'
 var fgaNic1Id = fgaNic1Name.id
-var fgaNic2Name_var = '${fgaVmName_var}-Nic2'
+var var_fgaNic2Name = '${var_fgaVmName}-Nic2'
 var fgaNic2Id = fgaNic2Name.id
-var fgbNic1Name_var = '${fgbVmName_var}-Nic1'
+var var_fgbNic1Name = '${var_fgbVmName}-Nic1'
 var fgbNic1Id = fgbNic1Name.id
-var fgbNic2Name_var = '${fgbVmName_var}-Nic2'
+var var_fgbNic2Name = '${var_fgbVmName}-Nic2'
 var fgbNic2Id = fgbNic2Name.id
-var serialConsoleStorageAccountName_var = 'console${uniqueString(resourceGroup().id)}'
+var var_serialConsoleStorageAccountName = 'console${uniqueString(resourceGroup().id)}'
 var serialConsoleStorageAccountType = 'Standard_LRS'
 var serialConsoleEnabled = ((serialConsole == 'yes') ? true : false)
-var publicIP1Name_var = ((publicIP1Name == '') ? '${fortiGateNamePrefix}-FGT-A-PIP' : publicIP1Name)
-var publicIP1Id = ((publicIP1NewOrExisting == 'new') ? publicIP1Name_resource.id : resourceId(publicIP1ResourceGroup, 'Microsoft.Network/publicIPAddresses', publicIP1Name_var))
-var publicIP2Name_var = ((publicIP2Name == '') ? '${fortiGateNamePrefix}-FGT-B-PIP' : publicIP2Name)
-var publicIP2Id = ((publicIP2NewOrExisting == 'new') ? publicIP2Name_resource.id : resourceId(publicIP2ResourceGroup, 'Microsoft.Network/publicIPAddresses', publicIP2Name_var))
-var nsgName_var = '${fortiGateNamePrefix}-NSG-Allow-All'
+var var_publicIP1Name = ((publicIP1Name == '') ? '${fortiGateNamePrefix}-FGT-A-PIP' : publicIP1Name)
+var publicIP1Id = ((publicIP1NewOrExisting == 'new') ? publicIP1Name_resource.id : resourceId(publicIP1ResourceGroup, 'Microsoft.Network/publicIPAddresses', var_publicIP1Name))
+var var_publicIP2Name = ((publicIP2Name == '') ? '${fortiGateNamePrefix}-FGT-B-PIP' : publicIP2Name)
+var publicIP2Id = ((publicIP2NewOrExisting == 'new') ? publicIP2Name_resource.id : resourceId(publicIP2ResourceGroup, 'Microsoft.Network/publicIPAddresses', var_publicIP2Name))
+var var_nsgName = '${fortiGateNamePrefix}-NSG-Allow-All'
 var nsgId = nsgName.id
 var sn1IPArray = split(subnet1Prefix, '.')
 var sn1IPArray2ndString = string(sn1IPArray[3])
@@ -310,13 +296,13 @@ var sn2GatewayIP = '${sn2IPArray0}.${sn2IPArray1}.${sn2IPArray2}.${sn2IPArray3}'
 var sn2IPStartAddress = split(subnet2StartAddress, '.')
 var sn2IPfga = '${sn2IPArray0}.${sn2IPArray1}.${sn2IPArray2}.${(int(sn2IPStartAddress[3]) + 1)}'
 var sn2IPfgb = '${sn2IPArray0}.${sn2IPArray1}.${sn2IPArray2}.${(int(sn2IPStartAddress[3]) + 2)}'
-var GWLBName_var = '${fortiGateNamePrefix}-GWLB'
+var var_GWLBName = '${fortiGateNamePrefix}-GWLB'
 var GWLBFEName = '${fortiGateNamePrefix}-GWLB-${subnet1Name}-FrontEnd'
-var GWLBFEId = resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', GWLBName_var, GWLBFEName)
+var GWLBFEId = resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', var_GWLBName, GWLBFEName)
 var GWLBBEName = '${fortiGateNamePrefix}-GWLB-${subnet1Name}-BackEnd'
-var GWLBBEId = resourceId('Microsoft.Network/loadBalancers/backendAddressPools', GWLBName_var, GWLBBEName)
+var GWLBBEId = resourceId('Microsoft.Network/loadBalancers/backendAddressPools', var_GWLBName, GWLBBEName)
 var GWLBProbeName = 'lbprobe'
-var GWLBProbeId = resourceId('Microsoft.Network/loadBalancers/probes', GWLBName_var, GWLBProbeName)
+var GWLBProbeId = resourceId('Microsoft.Network/loadBalancers/probes', var_GWLBName, GWLBProbeName)
 var useAZ = ((!empty(pickZones('Microsoft.Compute', 'virtualMachines', location))) && (availabilityOptions == 'Availability Zones'))
 var zone1 = [
   '1'
@@ -326,7 +312,7 @@ var zone2 = [
 ]
 
 resource serialConsoleStorageAccountName 'Microsoft.Storage/storageAccounts@2021-02-01' = if (serialConsole == 'yes') {
-  name: serialConsoleStorageAccountName_var
+  name: var_serialConsoleStorageAccountName
   location: location
   kind: 'Storage'
   sku: {
@@ -335,7 +321,7 @@ resource serialConsoleStorageAccountName 'Microsoft.Storage/storageAccounts@2021
 }
 
 resource availabilitySetName 'Microsoft.Compute/availabilitySets@2021-07-01' = if (!useAZ) {
-  name: availabilitySetName_var
+  name: var_availabilitySetName
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -350,7 +336,7 @@ resource availabilitySetName 'Microsoft.Compute/availabilitySets@2021-07-01' = i
 }
 
 resource vnetName_resource 'Microsoft.Network/virtualNetworks@2020-04-01' = if (vnetNewOrExisting == 'new') {
-  name: vnetName_var
+  name: var_vnetName
   location: location
   properties: {
     addressSpace: {
@@ -376,7 +362,7 @@ resource vnetName_resource 'Microsoft.Network/virtualNetworks@2020-04-01' = if (
 }
 
 resource GWLBName 'Microsoft.Network/loadBalancers@2021-08-01' = {
-  name: GWLBName_var
+  name: var_GWLBName
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -456,7 +442,7 @@ resource GWLBName 'Microsoft.Network/loadBalancers@2021-08-01' = {
 
 
 resource nsgName 'Microsoft.Network/networkSecurityGroups@2020-04-01' = {
-  name: nsgName_var
+  name: var_nsgName
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -496,7 +482,7 @@ resource nsgName 'Microsoft.Network/networkSecurityGroups@2020-04-01' = {
 }
 
 resource publicIP1Name_resource 'Microsoft.Network/publicIPAddresses@2020-04-01' = if (publicIP1NewOrExisting == 'new') {
-  name: publicIP1Name_var
+  name: var_publicIP1Name
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -507,13 +493,13 @@ resource publicIP1Name_resource 'Microsoft.Network/publicIPAddresses@2020-04-01'
   properties: {
     publicIPAllocationMethod: 'Static'
     dnsSettings: {
-      domainNameLabel: '${toLower(fgaVmName_var)}-${uniqueString(resourceGroup().id)}'
+      domainNameLabel: '${toLower(var_fgaVmName)}-${uniqueString(resourceGroup().id)}'
     }
   }
 }
 
 resource publicIP2Name_resource 'Microsoft.Network/publicIPAddresses@2020-04-01' = if (publicIP2NewOrExisting == 'new') {
-  name: publicIP2Name_var
+  name: var_publicIP2Name
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -524,7 +510,7 @@ resource publicIP2Name_resource 'Microsoft.Network/publicIPAddresses@2020-04-01'
   properties: {
     publicIPAllocationMethod: 'Static'
     dnsSettings: {
-      domainNameLabel: '${toLower(fgbVmName_var)}-${uniqueString(resourceGroup().id)}'
+      domainNameLabel: '${toLower(var_fgbVmName)}-${uniqueString(resourceGroup().id)}'
     }
   }
 }
@@ -532,7 +518,7 @@ resource publicIP2Name_resource 'Microsoft.Network/publicIPAddresses@2020-04-01'
 
 
 resource fgaNic1Name 'Microsoft.Network/networkInterfaces@2020-04-01' = {
-  name: fgaNic1Name_var
+  name: var_fgaNic1Name
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -568,7 +554,7 @@ resource fgaNic1Name 'Microsoft.Network/networkInterfaces@2020-04-01' = {
 }
 
 resource fgbNic1Name 'Microsoft.Network/networkInterfaces@2020-04-01' = {
-  name: fgbNic1Name_var
+  name: var_fgbNic1Name
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -605,7 +591,7 @@ resource fgbNic1Name 'Microsoft.Network/networkInterfaces@2020-04-01' = {
 }
 
 resource fgaNic2Name 'Microsoft.Network/networkInterfaces@2020-04-01' = {
-  name: fgaNic2Name_var
+  name: var_fgaNic2Name
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -638,7 +624,7 @@ resource fgaNic2Name 'Microsoft.Network/networkInterfaces@2020-04-01' = {
 }
 
 resource fgbNic2Name 'Microsoft.Network/networkInterfaces@2020-04-01' = {
-  name: fgbNic2Name_var
+  name: var_fgbNic2Name
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -673,7 +659,7 @@ resource fgbNic2Name 'Microsoft.Network/networkInterfaces@2020-04-01' = {
 }
 
 resource fgaVmName 'Microsoft.Compute/virtualMachines@2021-07-01' = {
-  name: fgaVmName_var
+  name: var_fgaVmName
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -681,7 +667,7 @@ resource fgaVmName 'Microsoft.Compute/virtualMachines@2021-07-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  zones: (useAZ ? zone1 : json('null'))
+  zones: (useAZ ? zone1 : null )
   plan: {
     name: fortiGateImageSKU
     publisher: imagePublisher
@@ -691,9 +677,9 @@ resource fgaVmName 'Microsoft.Compute/virtualMachines@2021-07-01' = {
     hardwareProfile: {
       vmSize: instanceType
     }
-    availabilitySet: ((!useAZ) ? availabilitySetId : json('null'))
+    availabilitySet: ((!useAZ) ? availabilitySetId : null )
     osProfile: {
-      computerName: fgaVmName_var
+      computerName: var_fgaVmName
       adminUsername: adminUsername
       adminPassword: adminPassword
       customData: fgaCustomData
@@ -735,14 +721,14 @@ resource fgaVmName 'Microsoft.Compute/virtualMachines@2021-07-01' = {
     diagnosticsProfile: {
       bootDiagnostics: {
         enabled: serialConsoleEnabled
-        storageUri: ((serialConsole == 'yes') ? reference(serialConsoleStorageAccountName_var, '2021-08-01').primaryEndpoints.blob : json('null'))
+        storageUri: ((serialConsole == 'yes') ? reference(var_serialConsoleStorageAccountName, '2021-08-01').primaryEndpoints.blob : null )
       }
     }
   }
 }
 
 resource fgbVmName 'Microsoft.Compute/virtualMachines@2021-07-01' = {
-  name: fgbVmName_var
+  name: var_fgbVmName
   location: location
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -750,7 +736,7 @@ resource fgbVmName 'Microsoft.Compute/virtualMachines@2021-07-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  zones: (useAZ ? zone2 : json('null'))
+  zones: (useAZ ? zone2 : null )
   plan: {
     name: fortiGateImageSKU
     publisher: imagePublisher
@@ -760,9 +746,9 @@ resource fgbVmName 'Microsoft.Compute/virtualMachines@2021-07-01' = {
     hardwareProfile: {
       vmSize: instanceType
     }
-    availabilitySet: ((!useAZ) ? availabilitySetId : json('null'))
+    availabilitySet: ((!useAZ) ? availabilitySetId : null )
     osProfile: {
-      computerName: fgbVmName_var
+      computerName: var_fgbVmName
       adminUsername: adminUsername
       adminPassword: adminPassword
       customData: fgbCustomData
@@ -804,7 +790,7 @@ resource fgbVmName 'Microsoft.Compute/virtualMachines@2021-07-01' = {
     diagnosticsProfile: {
       bootDiagnostics: {
         enabled: serialConsoleEnabled
-        storageUri: ((serialConsole == 'yes') ? reference(serialConsoleStorageAccountName_var, '2021-08-01').primaryEndpoints.blob : json('null'))
+        storageUri: ((serialConsole == 'yes') ? reference(var_serialConsoleStorageAccountName, '2021-08-01').primaryEndpoints.blob : null )
       }
     }
   }
