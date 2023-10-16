@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "fortiGateImageSKU": {
-            "value": "fortinet_fg-vm_payg_20190624"
+            "value": "fortinet_fg-vm_payg_2022"
         },
         "fortiGateImageVersion": {
-            "value": "7.0.5"
+            "value": "7.2.5"
         },
         "fortiGateAdditionalCustomData": {
             "value": ""
