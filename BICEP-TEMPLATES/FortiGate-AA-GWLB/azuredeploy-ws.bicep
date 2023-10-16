@@ -8,8 +8,8 @@ param Username string
 param Password string
 param fortiGateNamePrefix string
 
-var resourcegroup = resourceGroup().name
-var subscriptionid = subscription().subscriptionId
+//var resourcegroup = resourceGroup().name
+//var subscriptionid = subscription().subscriptionId
 var vNETName = '${DeploymentPrefix}-vNET'
 var vmName = '${DeploymentPrefix}-VM'
 var diskName = '${DeploymentPrefix}-disk'
@@ -21,7 +21,15 @@ var PipId = publicIPAddress.id
 var NSGName = '${DeploymentPrefix}-NSG'
 var NSGId = networkSecurityGroup.id
 var var_GWLBName = '${fortiGateNamePrefix}-GWLB'
-var gwlbId = resourceId('/subscriptions/${subscriptionid}/resourceGroups/${resourcegroup}/providers/Microsoft.Network/loadBalancers/${var_GWLBName}','/frontendIPConfigurations/${var_GWLBName}-ProviderSubnet-FrontEnd')
+//var gwlbResourceId = resourceId(subscriptionid, resourcegroup, 'Microsoft.Network/loadBalancers', var_GWLBName)
+//var gwlbfrontendConfigName = ' ${var_GWLBName}-ProviderSubnet-FrontEnd'
+//var gwlbFrontendIPConfigId = '${gwlbResourceId}/frontendIPConfigurations/${gwlbfrontendConfigName}'
+//var gwlbid = gwlbFrontendIPConfigId
+var providerNamespace = 'Microsoft.Network'
+var parentResourceType = 'loadBalancers'
+var childResourceType = 'frontendIPConfigurations'
+var frontendConfigName = '${var_GWLBName}-ProviderSubnet-FrontEnd'
+var gwlbFrontendIPConfigId = subscriptionResourceId(providerNamespace, '${parentResourceType}/${var_GWLBName}/${childResourceType}/${frontendConfigName}')
 
 
 
@@ -111,7 +119,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
         name: 'ipconfig1'
         properties: {
           gatewayLoadBalancer: {
-            id: gwlbId
+            id: gwlbFrontendIPConfigId
           }
           privateIPAllocationMethod: 'Dynamic'
           

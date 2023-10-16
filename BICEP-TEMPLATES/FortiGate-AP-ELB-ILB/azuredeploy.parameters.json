@@ -13,7 +13,7 @@
         "value": ""
       },
       "instanceType": {
-        "value": "Standard_F4s"
+        "value": "Standard_D8as_v4"
       },
       "availabilityOptions": {
         "value": "Availability Zones"
