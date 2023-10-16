@@ -1,3 +1,5 @@
+//Parameters
+
 param location string = 'canadacentral'
 param DeploymentPrefix string = 'AJLab-WS'
 param vNETCIDR string = '10.0.0.0/16'
@@ -7,10 +9,11 @@ param Username string
 @secure()
 param Password string
 param GWLBFEId string
-param fortiGateNamePrefix string
 
-//var resourcegroup = resourceGroup().name
-//var subscriptionid = subscription().subscriptionId
+
+//variables
+
+
 var vNETName = '${DeploymentPrefix}-vNET'
 var vmName = '${DeploymentPrefix}-VM'
 var diskName = '${DeploymentPrefix}-disk'
@@ -21,10 +24,9 @@ var PipName = '${DeploymentPrefix}-PIP'
 var PipId = publicIPAddress.id
 var NSGName = '${DeploymentPrefix}-NSG'
 var NSGId = networkSecurityGroup.id
-//var var_GWLBName = '${fortiGateNamePrefix}-GWLB'
-//var frontendConfigName = '${var_GWLBName}-ProviderSubnet-FrontEnd'
-//var gwlbId = subscriptionResourceId('Microsoft.Network/loadBalancers', var_GWLBName)
-//var gwlbFrontendIPConfigId = subscriptionResourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', var_GWLBName, frontendConfigName)
+
+
+//Resources
 
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
@@ -178,5 +180,8 @@ resource windowsVM 'Microsoft.Compute/virtualMachines@2020-12-01' = {
     }
   }
 }
+
+
+//Outputs
 
 output WindowsServerPublicIP string = reference(PipId).ipAddress
