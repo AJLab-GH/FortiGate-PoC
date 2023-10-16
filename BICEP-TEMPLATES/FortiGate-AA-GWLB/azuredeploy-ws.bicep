@@ -21,6 +21,9 @@ var PipId = publicIPAddress.id
 var NSGName = '${DeploymentPrefix}-NSG'
 var NSGId = networkSecurityGroup.id
 var var_GWLBName = '${fortiGateNamePrefix}-GWLB'
+var gwlbId = resourceId('/subscriptions/${subscriptionid}/resourceGroups/${resourcegroup}/providers/Microsoft.Network/loadBalancers/${var_GWLBName}','/frontendIPConfigurations/${var_GWLBName}-ProviderSubnet-FrontEnd')
+
+
 
 
 
@@ -108,7 +111,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
         name: 'ipconfig1'
         properties: {
           gatewayLoadBalancer: {
-            id: '/subscriptions/${subscriptionid}/resourceGroups/${resourcegroup}/providers/Microsoft.Network/loadBalancers/${var_GWLBName}/frontendIPConfigurations/${var_GWLBName}-ProviderSubnet-FrontEnd'
+            id: gwlbId
           }
           privateIPAllocationMethod: 'Dynamic'
           
