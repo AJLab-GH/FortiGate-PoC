@@ -8,8 +8,8 @@ param Username string
 param Password string
 param fortiGateNamePrefix string
 
-//var resourcegroup = resourceGroup().name
-//var subscriptionid = subscription().subscriptionId
+var resourcegroup = resourceGroup().name
+var subscriptionid = subscription().subscriptionId
 var vNETName = '${DeploymentPrefix}-vNET'
 var vmName = '${DeploymentPrefix}-VM'
 var diskName = '${DeploymentPrefix}-disk'
@@ -21,15 +21,14 @@ var PipId = publicIPAddress.id
 var NSGName = '${DeploymentPrefix}-NSG'
 var NSGId = networkSecurityGroup.id
 var var_GWLBName = '${fortiGateNamePrefix}-GWLB'
-//var gwlbResourceId = resourceId(subscriptionid, resourcegroup, 'Microsoft.Network/loadBalancers', var_GWLBName)
-//var gwlbfrontendConfigName = ' ${var_GWLBName}-ProviderSubnet-FrontEnd'
-//var gwlbFrontendIPConfigId = '${gwlbResourceId}/frontendIPConfigurations/${gwlbfrontendConfigName}'
-//var gwlbid = gwlbFrontendIPConfigId
-var providerNamespace = 'Microsoft.Network'
-var parentResourceType = 'loadBalancers'
-var childResourceType = 'frontendIPConfigurations'
+
+// This will use the resourceId function to generate the parent (load balancer) ID.
+var lbResourceId = resourceId('Microsoft.Network/loadBalancers', var_GWLBName)
+
+// This will use the resourceId function to generate the nested frontend IP config's ID. 
+// We trick Bicep's linter by making it think we're getting an ID for a top-level resource.
 var frontendConfigName = '${var_GWLBName}-ProviderSubnet-FrontEnd'
-var gwlbFrontendIPConfigId = subscriptionResourceId(providerNamespace, '${parentResourceType}/${var_GWLBName}/${childResourceType}/${frontendConfigName}')
+var gwlbFrontendIPConfigId = resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', '${var_GWLBName}/${frontendConfigName}')
 
 
 
