@@ -21,15 +21,8 @@ var PipId = publicIPAddress.id
 var NSGName = '${DeploymentPrefix}-NSG'
 var NSGId = networkSecurityGroup.id
 var var_GWLBName = '${fortiGateNamePrefix}-GWLB'
-
-// This will use the resourceId function to generate the parent (load balancer) ID.
-var lbResourceId = resourceId('Microsoft.Network/loadBalancers', var_GWLBName)
-
-// This will use the resourceId function to generate the nested frontend IP config's ID. 
-// We trick Bicep's linter by making it think we're getting an ID for a top-level resource.
 var frontendConfigName = '${var_GWLBName}-ProviderSubnet-FrontEnd'
-var gwlbFrontendIPConfigId = resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', '${var_GWLBName}/${frontendConfigName}')
-
+var gwlbFrontendIPConfigId = extensionResourceId(resourcegroup, 'Microsoft.Network/loadBalancers', var_GWLBName, 'frontendIPConfigurations', frontendConfigName)
 
 
 
