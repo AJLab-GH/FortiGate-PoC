@@ -803,15 +803,17 @@ module WSDeployment 'azuredeploy-ws.bicep' = {
     Password: adminPassword
     DeploymentPrefix: deploymentPrefix
     fortiGateNamePrefix: fortiGateNamePrefix
+    GWLBFEId: GWLBFEId
   }
   dependsOn: [GWLBName]
 }
 
-
+output gwlbid string = GWLBFEId
 output fortiGateAPublicIP string = ((publicIP1NewOrExisting == 'new') ? reference(publicIP1Id).ipAddress : '')
 output fortiGateBPublicIP string = ((publicIP2NewOrExisting == 'new') ? reference(publicIP2Id).ipAddress : '')
 output fortiGateAFQDN string = ((publicIP1NewOrExisting == 'new') ? reference(publicIP1Id).dnsSettings.fqdn : '')
 output fortiGateBFQDN string = ((publicIP1NewOrExisting == 'new') ? reference(publicIP2Id).dnsSettings.fqdn : '')
+
 
 
 

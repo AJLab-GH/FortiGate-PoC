@@ -6,10 +6,11 @@ param sn1CIDR string = '10.0.0.0/24'
 param Username string
 @secure()
 param Password string
+param GWLBFEId string
 param fortiGateNamePrefix string
 
-var resourcegroup = resourceGroup().name
-var subscriptionid = subscription().subscriptionId
+//var resourcegroup = resourceGroup().name
+//var subscriptionid = subscription().subscriptionId
 var vNETName = '${DeploymentPrefix}-vNET'
 var vmName = '${DeploymentPrefix}-VM'
 var diskName = '${DeploymentPrefix}-disk'
@@ -20,10 +21,10 @@ var PipName = '${DeploymentPrefix}-PIP'
 var PipId = publicIPAddress.id
 var NSGName = '${DeploymentPrefix}-NSG'
 var NSGId = networkSecurityGroup.id
-var var_GWLBName = '${fortiGateNamePrefix}-GWLB'
-var frontendConfigName = '${var_GWLBName}-ProviderSubnet-FrontEnd'
-var gwlbId = subscriptionResourceId('Microsoft.Network/loadBalancers', var_GWLBName)
-var gwlbFrontendIPConfigId = subscriptionResourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', var_GWLBName, frontendConfigName)
+//var var_GWLBName = '${fortiGateNamePrefix}-GWLB'
+//var frontendConfigName = '${var_GWLBName}-ProviderSubnet-FrontEnd'
+//var gwlbId = subscriptionResourceId('Microsoft.Network/loadBalancers', var_GWLBName)
+//var gwlbFrontendIPConfigId = subscriptionResourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', var_GWLBName, frontendConfigName)
 
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
@@ -110,7 +111,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
         name: 'ipconfig1'
         properties: {
           gatewayLoadBalancer: {
-            id: gwlbFrontendIPConfigId
+            id: GWLBFEId
           }
           privateIPAllocationMethod: 'Dynamic'
           
