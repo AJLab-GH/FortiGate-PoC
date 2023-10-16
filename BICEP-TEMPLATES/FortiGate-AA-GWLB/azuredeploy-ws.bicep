@@ -22,9 +22,8 @@ var NSGName = '${DeploymentPrefix}-NSG'
 var NSGId = networkSecurityGroup.id
 var var_GWLBName = '${fortiGateNamePrefix}-GWLB'
 var frontendConfigName = '${var_GWLBName}-ProviderSubnet-FrontEnd'
-var gwlbFrontendIPConfigId = extensionResourceId(resourcegroup, 'Microsoft.Network/loadBalancers', var_GWLBName, 'frontendIPConfigurations', frontendConfigName)
-
-
+var gwlbId = subscriptionResourceId('Microsoft.Network/loadBalancers', var_GWLBName)
+var gwlbFrontendIPConfigId = subscriptionResourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', var_GWLBName, frontendConfigName)
 
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
